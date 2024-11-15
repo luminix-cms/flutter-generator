@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:dart_style/dart_style.dart';
 import 'package:change_case/change_case.dart';
 import 'package:luminix_generator/utils.dart';
+// ignore: depend_on_referenced_packages
+import 'package:dart_style/dart_style.dart';
 
 class LuminixBuilder implements Builder {
   @override
@@ -19,6 +20,9 @@ class LuminixBuilder implements Builder {
       final routes = json['routes']['luminix'] as Map<String, dynamic>;
       var output = StringBuffer();
 
+      output
+          .writeln('import \'package:luminix_flutter/luminix_flutter.dart\';');
+
       for (var schemaName in models.keys) {
         output.writeln(
             modelClass(schemaName, models[schemaName], routes[schemaName]));
@@ -30,7 +34,7 @@ class LuminixBuilder implements Builder {
           inputId.package,
           inputId.path.replaceFirst('manifest.json', 'models.dart'),
         ),
-        output.toString(),
+        DartFormatter().format(output.toString()),
       );
     }
   }
@@ -87,7 +91,14 @@ String modelClass(String schemaName, Map<String, dynamic> model,
       ..body = Code('setAttribute("$attributeName", value);')));
   }
 
+  mixinBuilder.methods.add(Method((b) => b
+    ..annotations.add(refer('override'))
+    ..name = 'toString'
+    ..returns = refer('String')
+    ..body = Code(
+        'return "${schemaName.toPascalCase()}(${fields.map((field) => "${(field['name'] as String).toCamelCase()}: \$${(field['name'] as String).toCamelCase()}").join(', ')})";')));
+
   final mixin = mixinBuilder.build();
   final emitter = DartEmitter();
-  return DartFormatter().format('${mixin.accept(emitter)}');
+  return '${mixin.accept(emitter)}';
 }
