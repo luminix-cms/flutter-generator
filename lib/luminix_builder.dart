@@ -128,7 +128,15 @@ String modelClass(String schemaName, Map<String, dynamic> model,
     final ownerKey = relationDetails['ownerKey'] as String?;
 
     classBuilder.methods.add(Method((b) => b
+      ..lambda = true
       ..name = relationName.toCamelCase()
+      ..type = MethodType.getter
+      ..returns = refer(relatedModel.toPascalCase())
+      ..body = Code(
+          '${relationName.toCamelCase()}Relation.getLoadedItems() as ${relatedModel.toPascalCase()}')));
+
+    classBuilder.methods.add(Method((b) => b
+      ..name = '${relationName.toCamelCase()}Relation'
       ..returns = refer(relationType)
       ..body = Code('''
           return ${relationType.toCamelCase()}(
@@ -144,7 +152,8 @@ String modelClass(String schemaName, Map<String, dynamic> model,
   for (final field in fields) {
     final fieldName = (field['name'] as String).toCamelCase();
     final attributeName = field['name'] as String;
-    final fieldType = '${normalizeTypes(field['phpType'])}?';
+    final fieldType =
+        '${normalizeTypes(field['phpType'])}${normalizeTypes(field['phpType']) == 'dynamic' ? '' : '?'}';
 
     // Getter
     classBuilder.methods.add(Method((b) => b
