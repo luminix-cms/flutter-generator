@@ -65,7 +65,7 @@ String modelClass(String schemaName, Map<String, dynamic> model,
       ..name = 'makeRelations'
       ..returns = refer('void')
       ..body = Code(relations?.keys.map((relationName) {
-            return '${relationName.toCamelCase()}();';
+            return '${relationName.toCamelCase()}Relation();';
           }).join('\n') ??
           ''),
   ));
@@ -133,7 +133,7 @@ String modelClass(String schemaName, Map<String, dynamic> model,
       ..type = MethodType.getter
       ..returns = refer(relatedModel.toPascalCase())
       ..body = Code(
-          '${relationName.toCamelCase()}Relation.getLoadedItems() as ${relatedModel.toPascalCase()}')));
+          '${relationName.toCamelCase()}Relation().getLoadedItems() as ${relatedModel.toPascalCase()}')));
 
     classBuilder.methods.add(Method((b) => b
       ..name = '${relationName.toCamelCase()}Relation'
