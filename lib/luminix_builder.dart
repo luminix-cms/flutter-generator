@@ -131,9 +131,9 @@ String modelClass(String schemaName, Map<String, dynamic> model,
       ..lambda = true
       ..name = relationName.toCamelCase()
       ..type = MethodType.getter
-      ..returns = refer(relatedModel.toPascalCase())
+      ..returns = refer('${relatedModel.toPascalCase()}?')
       ..body = Code(
-          '${relationName.toCamelCase()}Relation().getLoadedItems() as ${relatedModel.toPascalCase()}')));
+          '${relationName.toCamelCase()}Relation().getLoadedItems() as ${relatedModel.toPascalCase()}?')));
 
     classBuilder.methods.add(Method((b) => b
       ..name = '${relationName.toCamelCase()}Relation'
