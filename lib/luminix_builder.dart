@@ -34,7 +34,8 @@ class LuminixBuilder implements Builder {
           inputId.package,
           inputId.path.replaceFirst('manifest.json', 'models.dart'),
         ),
-        DartFormatter().format(output.toString()),
+        DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
+            .format(output.toString()),
       );
     }
   }
